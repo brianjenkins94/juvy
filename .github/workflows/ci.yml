@@ -1,0 +1,58 @@
+{
+	"name": "ci/cd",
+	"on": {
+		"push": {
+			"branches": [
+				"main"
+			]
+		}
+	},
+	"jobs": {
+		"lint": {
+			"runs-on": "ubuntu-latest",
+			"env": {
+        "NODE_ENV": "production"
+      },
+			"steps": [
+				{
+					"uses": "actions/checkout@v2"
+				},
+				{
+					"run": "npm install eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser"
+				},
+				{
+					"run": "npx eslint --ignore-pattern \"public/**/*\" --quiet \"**/*.ts\""
+				}
+			]
+		},
+		"publish": {
+			"runs-on": "ubuntu-latest",
+			"env": {
+        "NODE_ENV": "production"
+      },
+			"steps": [
+				{
+					"uses": "actions/checkout@v2"
+				},
+				{
+					"run": "npm install"
+				},
+				{
+					"run": "npm publish",
+					"env": {
+						"NODE_AUTH_TOKEN": "${{ secrets.NPM_TOKEN }}"
+					}
+				},
+				{
+					"uses": "actions/setup-node@v2"
+				},
+				{
+					"run": "npm publish",
+					"env": {
+						"NODE_AUTH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
+					}
+				}
+			]
+		}
+	}
+}

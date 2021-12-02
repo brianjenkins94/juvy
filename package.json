@@ -1,0 +1,26 @@
+{
+  "name": "juvy",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brianjenkins94/juvy.git"
+  },
+  "author": "Brian Jenkins",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brianjenkins94/juvy/issues"
+  },
+  "homepage": "https://github.com/brianjenkins94/juvy#readme",
+  "devDependencies": {
+    "@types/node": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "eslint": "^7.32.0",
+    "typescript": "latest"
+  }
+}
