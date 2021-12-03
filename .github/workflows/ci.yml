@@ -1,5 +1,5 @@
 {
-	"name": "ci/cd",
+	"name": "ci",
 	"on": {
 		"push": {
 			"branches": [
@@ -16,6 +16,9 @@
 			"steps": [
 				{
 					"uses": "actions/checkout@v2"
+				},
+				{
+					"uses": "actions/setup-node@v2"
 				},
 				{
 					"run": "npm install eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser"
@@ -35,6 +38,9 @@
 					"uses": "actions/checkout@v2"
 				},
 				{
+					"uses": "actions/setup-node@v2"
+				},
+				{
 					"run": "npm install"
 				},
 				{
@@ -42,9 +48,6 @@
 					"env": {
 						"NODE_AUTH_TOKEN": "${{ secrets.NPM_TOKEN }}"
 					}
-				},
-				{
-					"uses": "actions/setup-node@v2"
 				},
 				{
 					"run": "npm publish",
