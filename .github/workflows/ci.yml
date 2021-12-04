@@ -21,6 +21,52 @@
 					"run": "npx eslint --ignore-pattern \"public/**/*\" --quiet \"**/*.ts\""
 				}
 			]
+		},
+		"build": {
+			"runs-on": "ubuntu-latest",
+			"steps": [
+				{
+					"uses": "actions/checkout@v2"
+				},
+				{
+					"run": "npm install"
+				},
+				{
+					"run": "npm run build"
+				}
+			]
+		},
+		"test": {
+			"runs-on": "ubuntu-latest",
+			"steps": [
+				{
+					"uses": "actions/checkout@v2"
+				},
+				{
+					"run": "npm install"
+				},
+				{
+					"run": "npm run test"
+				}
+			]
+		},
+		"publish": {
+			"runs-on": "ubuntu-latest",
+			"needs": ["lint", "build", "test"],
+			"env": {
+				"NODE_AUTH_TOKEN": "${{ secrets.NPM_TOKEN }}"
+			},
+			"steps": [
+				{
+					"uses": "actions/checkout@v2"
+				},
+				{
+					"run": "npm build"
+				},
+				{
+					"run": "npm publish"
+				}
+			]
 		}
 	}
 }
