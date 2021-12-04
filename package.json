@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc --noEmit false",
+    "lint": "npx eslint --ignore-pattern \"public/**/*\" --quiet \"**/*.ts\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
