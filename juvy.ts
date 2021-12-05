@@ -1,3 +1,7 @@
+// @ts-nocheck
+
+/* eslint-disable complexity */
+
 function cloneDeep(object) {
 	if (typeof object !== "object" || object === null) {
 		return object;
@@ -96,8 +100,7 @@ class Juvy {
 					};
 
 					Object.keys(value).forEach(function(k) {
-						normalizeSchema(k, value[k], props[key]._juvyProperties, fullName + "."
-							+ k, env, argv);
+						normalizeSchema(k, value[k], props[key]._juvyProperties, fullName + "." + k, env, argv);
 					});
 
 					return;
@@ -131,10 +134,10 @@ class Juvy {
 				const format = o.format;
 				let newFormat;
 
-				if (Object.keys(BUILT_INS).includes(format) || Object.values(BUILT_INS).includes(format)) {
+				if (Object.keys(Juvy.BUILT_INS).includes(format) || Object.values(Juvy.BUILT_INS).includes(format)) {
 					// If the format property is a built-in JavaScript constructor,
 					// assert that the value is of that type
-					const Format = typeof format === "string" ? BUILT_INS[format] : format;
+					const Format = typeof format === "string" ? Juvy.BUILT_INS[format] : format;
 
 					newFormat = function(x) {
 						console.assert(Object.prototype.toString.call(x) === Object.prototype.toString.call(new Format()), "must be of type " + Format.name);
@@ -213,7 +216,7 @@ class Juvy {
 
 		while (ar.length > 0) {
 			const k = ar.shift();
-			if (o && o._juvyProperties && o._juvyProperties[k]) {
+			if (o?._juvyProperties?.[k]) {
 				o = o._juvyProperties[k];
 			} else {
 				o = null;
