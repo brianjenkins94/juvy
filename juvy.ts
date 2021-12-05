@@ -91,7 +91,7 @@ class Juvy {
 				});
 
 				if (key === "_juvyProperties") {
-					throw new Error("'" + fullName + "': '_juvyProperties' is reserved word of convict.");
+					throw new Error("'" + fullName + "': '_juvyProperties' is reserved word of juvy.");
 				}
 
 				// If the current schema node is not a config property (has no "default"), recursively normalize it.
