@@ -123,10 +123,6 @@ class Juvy {
 
 				// Associate this property with a command-line argument
 				if (o.arg) {
-					if (argv[o.arg]) {
-						throw new Error("'" + fullName + "' reuses a command-line argument: " + o.arg);
-					}
-
 					argv[o.arg] = fullName;
 				}
 
@@ -289,8 +285,8 @@ class Juvy {
 				const arg = args[x];
 
 				if (arg[1] !== "-") {
-					for (const a of arg.substring(1).split("")) {
-						argv[`--${a}`] = true;
+					for (const shorthand of arg.substring(1).split("")) {
+						argv[shorthand] = true;
 					}
 
 					continue;
@@ -299,7 +295,7 @@ class Juvy {
 				}
 
 				const value = arg.split(/ +|=/u);
-				const key = value.shift();
+				const key = value.shift().replace(/^-+/u, "");
 
 				argv[key] = value.join(" ") ?? (args[x + 1] === undefined || args[x + 1].startsWith("-") || args[x + 1]);
 			}
