@@ -47,6 +47,14 @@ function getKeyOfObjectByPath(object, path) {
 }
 
 class Juvy {
+	private static readonly BUILT_INS = {
+		"Array": Array,
+		"Boolean": Boolean,
+		"Number": Number,
+		"Object": Object,
+		"RegExp": RegExp,
+		"String": String
+	};
 	private readonly _schema = {
 		"_juvyProperties": {}
 	};
@@ -54,44 +62,31 @@ class Juvy {
 	private readonly _argv = {};
 	private readonly _instance = {};
 	private readonly options = {};
+	private readonly types = {
+		"*": function() { },
+		"int": function(x) {
+			console.assert(Number.isInteger(x), "must be an integer");
+		},
+		"integer": function(x) {
+			console.assert(Number.isInteger(x), "must be an integer");
+		},
+		"nat": function(x) {
+			console.assert(Number.isInteger(x) && x >= 0, "must be a positive integer");
+		},
+		"port": function(x) {
+			console.assert(Number.isInteger(x) && x >= 0 && x <= 65535, "ports must be within range 0 - 65535");
+		}
+	};
 
 	public constructor(def, options = { "strict": true }) {
 		this.options["strict"] = options["strict"] ?? true;
 
 		for (const [key, value] of Object.entries(def)) {
+			const { types } = this;
 			// ???
 			(function normalizeSchema(key, value, props, fullName, env, argv) {
-				const types = {
-					"*": function() { },
-					"int": function(x) {
-						console.assert(Number.isInteger(x), "must be an integer");
-					},
-					"integer": function(x) {
-						console.assert(Number.isInteger(x), "must be an integer");
-					},
-					"nat": function(x) {
-						console.assert(Number.isInteger(x) && x >= 0, "must be a positive integer");
-					},
-					"port": function(x) {
-						console.assert(Number.isInteger(x) && x >= 0 && x <= 65535, "ports must be within range 0 - 65535");
-					}
-				};
-
-				const BUILT_INS_BY_NAME = {
-					"Object": Object,
-					"Array": Array,
-					"String": String,
-					"Number": Number,
-					"Boolean": Boolean,
-					"RegExp": RegExp
-				};
-				const BUILT_IN_NAMES = Object.keys(BUILT_INS_BY_NAME);
-				const BUILT_INS = BUILT_IN_NAMES.map(function(name) {
-					return BUILT_INS_BY_NAME[name];
-				});
-
 				if (key === "_juvyProperties") {
-					throw new Error("'" + fullName + "': '_juvyProperties' is reserved word of juvy.");
+					throw new Error("'" + fullName + "': `_juvyProperties` is reserved word of juvy.");
 				}
 
 				// If the current schema node is not a config property (has no "default"), recursively normalize it.
@@ -136,10 +131,10 @@ class Juvy {
 				const format = o.format;
 				let newFormat;
 
-				if (BUILT_INS.includes(format) || BUILT_IN_NAMES.includes(format)) {
+				if (Object.keys(BUILT_INS).includes(format) || Object.values(BUILT_INS).includes(format)) {
 					// If the format property is a built-in JavaScript constructor,
 					// assert that the value is of that type
-					const Format = typeof format === "string" ? BUILT_INS_BY_NAME[format] : format;
+					const Format = typeof format === "string" ? BUILT_INS[format] : format;
 
 					newFormat = function(x) {
 						console.assert(Object.prototype.toString.call(x) === Object.prototype.toString.call(new Format()), "must be of type " + Format.name);
