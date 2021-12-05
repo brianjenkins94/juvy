@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "",
   "type": "module",
-  "module": "dist/juvy.js",
+  "main": "dist/juvy.js",
   "types": "dist/juvy.d.ts",
   "scripts": {
     "build": "tsc --noEmit false",
