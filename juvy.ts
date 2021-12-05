@@ -23,12 +23,10 @@ function cloneDeep(object) {
 		}
 	}
 
-	console.log(object, clone);
-
 	return clone;
 }
 
-function getOrCreateKeyOfObjectByPath(object: object, path: string[]): object {
+function getOrCreateKeyOfObjectByPath(object, path) {
 	return path.reduce(function(object, key) {
 		if (object[key] === undefined) {
 			object[key] = {};
@@ -38,7 +36,7 @@ function getOrCreateKeyOfObjectByPath(object: object, path: string[]): object {
 	}, object);
 }
 
-function getKeyOfObjectByPath(object: object, path: string[]): object {
+function getKeyOfObjectByPath(object, path) {
 	return path.reduce(function(object, key) {
 		if (!Object.prototype.hasOwnProperty.call(object, key)) {
 			throw new TypeError("Cannot read properties of undefined (reading '" + key + "')");
@@ -61,9 +59,13 @@ class Juvy {
 		this.options["strict"] = options["strict"] ?? true;
 
 		for (const [key, value] of Object.entries(def)) {
+			// ???
 			(function normalizeSchema(key, value, props, fullName, env, argv) {
 				const types = {
 					"*": function() { },
+					"int": function(x) {
+						console.assert(Number.isInteger(x), "must be an integer");
+					},
 					"integer": function(x) {
 						console.assert(Number.isInteger(x), "must be an integer");
 					},
@@ -190,6 +192,7 @@ class Juvy {
 			})(key, value, this._schema._juvyProperties, key, this._env, this._argv);
 		}
 
+		// ???
 		(function addDefaultValues(schema, c, instance) {
 			for (const [key, value] of Object.entries(schema._juvyProperties)) {
 				if (value["_juvyProperties"]) {
@@ -208,7 +211,8 @@ class Juvy {
 		Juvy.importArguments(this);
 	}
 
-	private static coerce(path: string, value, schema) {
+	// ???
+	private static coerce(path, value, schema) {
 		const ar = path.split(".");
 		let o = schema;
 
@@ -236,6 +240,7 @@ class Juvy {
 
 		if (typeof value === "string") {
 			switch (format) {
+				case "int":
 				case "integer":
 				case "nat":
 				case "port":
@@ -264,7 +269,7 @@ class Juvy {
 		return value;
 	}
 
-	private static importEnvironment(o): void {
+	private static importEnvironment(o) {
 		const env = process.env;
 
 		for (const [key, value] of Object.entries(o._env)) {
@@ -276,8 +281,8 @@ class Juvy {
 		}
 	}
 
-	private static importArguments(o): void {
-		const argv = (function parseArgs(args): object {
+	private static importArguments(o) {
+		const argv = (function parseArgs(args) {
 			const argv = {};
 
 			args = args.join(" ").match(/-(.*?)(?= +-|$)/gu) || [];
@@ -311,33 +316,33 @@ class Juvy {
 		}
 	}
 
-	public getProperties(): object {
+	public getProperties() {
 		return cloneDeep(this._instance);
 	}
 
-	public getSchema(): object {
+	public getSchema() {
 		return JSON.parse(JSON.stringify(this._schema));
 	}
 
-	public get(path): object {
+	public get(path) {
 		return cloneDeep(getKeyOfObjectByPath(this._instance, path.split(".")));
 	}
 
-	public default(path): object {
+	public default(path) {
 		path = (path.split(".").join("._juvyProperties.") + ".default").split(".");
 
 		return cloneDeep(getKeyOfObjectByPath(this._schema._juvyProperties, path));
 	}
 
-	public reset(name): void {
+	public reset(name) {
 		this.set(name, this.default(name));
 	}
 
-	public has(path): boolean {
+	public has(path) {
 		return Object.keys(this.getProperties()).includes(path);
 	}
 
-	public set(name, value): this {
+	public set(name, value) {
 		value = Juvy.coerce(name, value, this._schema);
 
 		const parent = name.split(".");
@@ -350,7 +355,7 @@ class Juvy {
 		return this;
 	}
 
-	public load(conf): this {
+	public load(conf) {
 		this.overlay(conf, this._instance, this._schema);
 
 		// Environment and arguments always overrides config files
@@ -360,7 +365,8 @@ class Juvy {
 		return this;
 	}
 
-	public overlay(from, to, schema): void {
+	// ???
+	public overlay(from, to, schema) {
 		for (const key of Object.keys(from)) {
 			// Leaf
 			if (Array.isArray(from[key]) || !(typeof from[key] === "object" && from[key] !== null) || !schema || schema.format === "object") {
@@ -375,13 +381,14 @@ class Juvy {
 		}
 	}
 
-	public validate(options = this.options): this {
-		function flatten(obj, useProperties?) {
+	// ???
+	public validate(options = this.options) {
+		function flatten(obj, useProperties) {
 			let key;
 
 			const entries = [];
 
-			for (const stack = Object.keys(obj); stack.length !== 0;) {
+			for (const stack = Object.keys(obj); stack.length > 0;) {
 				key = stack.shift();
 
 				let value = getKeyOfObjectByPath(obj, key.split("."));
@@ -485,6 +492,21 @@ class Juvy {
 	}
 }
 
-export function juvy(schema): Juvy {
+for (const method of [
+	"addFormat",
+	"addFormats",
+	"addParser",
+	"getArgs",
+	"getEnv",
+	"getSchemaString",
+	"loadFile",
+	"toString"
+]) {
+	Juvy[method] = function() {
+		throw new Error("Removed");
+	};
+}
+
+export function juvy(schema) {
 	return new Juvy(schema);
 }
