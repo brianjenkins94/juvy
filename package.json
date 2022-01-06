@@ -1,7 +1,7 @@
 {
   "name": "juvy",
   "version": "0.0.0",
-  "description": "",
+  "description": "A not quite drop-in replacement for mozilla/node-convict.",
   "type": "module",
   "main": "dist/juvy.js",
   "types": "dist/juvy.d.ts",
