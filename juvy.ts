@@ -164,7 +164,7 @@ class Juvy {
 					const type = Object.prototype.toString.call(o.default);
 
 					newFormat = function(x) {
-						console.assert(Object.prototype.toString.call(x) === type, " should be of type " + type.replace(/\[.* |]/gu, ""));
+						console.assert(Object.prototype.toString.call(x) === type, " should be of type " + type.replace(/\[.* \]/gu, ""));
 					};
 				}
 
