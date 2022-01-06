@@ -1,6 +1,6 @@
 {
   "name": "juvy",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A not quite drop-in replacement for mozilla/node-convict.",
   "type": "module",
   "main": "dist/juvy.js",
@@ -8,7 +8,8 @@
   "scripts": {
     "build": "tsc --noEmit false",
     "lint": "npx eslint --ignore-pattern \"public/**/*\" --quiet \"**/*.ts\"",
-    "test": "ava"
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest",
+    "watch": "tsc --noEmit false --watch"
   },
   "repository": {
     "type": "git",
